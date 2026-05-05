@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Analysis Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Cyber Security Analysis Tool</h1>
+            <p>Detect phishing links, scam text, hidden consent, urgency pressure, and suspicious image content.</p>
+        </header>
+
+        <main class="card">
+            <section class="left-panel">
+                <h2>Step 1: Choose Analysis Type</h2>
+
+                <div class="radio-group">
+                    <label><input type="radio" name="mode" value="Text" checked> Analyze Text</label>
+                    <label><input type="radio" name="mode" value="Link"> Analyze Link</label>
+                    <label><input type="radio" name="mode" value="Image"> Analyze Image</label>
+                </div>
+
+                <label class="title-label">Input Text or URL</label>
+                <input type="text" id="inputText" placeholder="Enter text or URL here...">
+
+                <label class="title-label">Select a Sample</label>
+                <select id="sampleBox">
+                    <option value="">Select a Sample</option>
+                    <option value="Limited time offer! Hurry and accept all to continue.">
+                        Limited time offer! Hurry and accept all to continue.
+                    </option>
+                    <option value="Your password expired. Login required to verify your bank details.">
+                        Your password expired. Login required to verify your bank details.
+                    </option>
+                    <option value="https://web.whatsapp.com/">
+                        Safe Link Sample
+                    </option>
+                    <option value="http://verify-account.bit.ly/login.zip">
+                        Dangerous Link Sample
+                    </option>
+                </select>
+
+                <label class="title-label">Upload Image</label>
+                <input type="file" id="imageInput" accept="image/*">
+
+                <div class="image-box">
+                    <img id="previewImage" alt="Image Preview">
+                    <span id="imagePlaceholder">Image Preview</span>
+                </div>
+
+                <div class="buttons">
+                    <button id="analyzeBtn">Perform Analysis</button>
+                    <button id="resetBtn">Reset All</button>
+                </div>
+            </section>
+
+            <section class="right-panel">
+                <h2>Step 2: Final Analysis Results</h2>
+                <div id="loadingText"></div>
+                <pre id="resultBox">Analysis results will appear here...</pre>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

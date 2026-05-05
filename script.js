@@ -41,23 +41,19 @@ analyzeBtn.addEventListener("click", async () => {
 
     if (mode === "Text") {
         const text = inputText.value.trim();
-
         if (text === "") {
             alert("Please enter text.");
             return;
         }
-
         resultBox.textContent = analyze(text, "Text");
     }
 
     else if (mode === "Link") {
         const link = inputText.value.trim();
-
         if (link === "") {
             alert("Please enter a URL.");
             return;
         }
-
         resultBox.textContent = analyze(link, "Link");
     }
 
@@ -67,7 +63,7 @@ analyzeBtn.addEventListener("click", async () => {
             return;
         }
 
-        loadingText.textContent = "Reading text from image, please wait...";
+        loadingText.textContent = "Reading text from image...";
         resultBox.textContent = "";
 
         try {
@@ -77,19 +73,17 @@ analyzeBtn.addEventListener("click", async () => {
             loadingText.textContent = "";
 
             if (extractedText === "") {
-                resultBox.textContent = "No readable text was found in the image.";
+                resultBox.textContent = "No readable text found.";
                 return;
             }
 
             resultBox.textContent =
-                "Extracted Text From Image:\n" +
-                extractedText +
-                "\n\n" +
+                "Extracted Text:\n" + extractedText + "\n\n" +
                 analyze(extractedText, "Image");
 
         } catch (error) {
             loadingText.textContent = "";
-            resultBox.textContent = "Error: System could not read text from image.";
+            resultBox.textContent = "Error reading image.";
         }
     }
 });
@@ -128,14 +122,14 @@ function analyze(text, mode) {
         ) {
             score += 50;
             patterns += "• Malicious Link Pattern\n";
-            explanation += "• Insecure protocol or suspicious URL shortener detected.\n";
-            recommendation += "• Dangerous! Do not open this link in your browser.\n";
+            explanation += "• Suspicious or insecure link detected.\n";
+            recommendation += "• Do not open this link.\n";
         } else {
             return "Analysis Result: This link appears to be safe.";
         }
     }
 
-    else if (mode === "Text" || mode === "Image") {
+    else {
         const fraudKeywords = [
             "login required",
             "bank details",
@@ -149,9 +143,9 @@ function analyze(text, mode) {
         for (let word of fraudKeywords) {
             if (text.includes(word)) {
                 score += 45;
-                patterns += "• Phishing/Scam Keywords\n";
-                explanation += "• Detected text commonly used to steal personal information.\n";
-                recommendation += "• Do not share any sensitive data based on this message.\n";
+                patterns += "• Phishing/Scam\n";
+                explanation += "• Possible attempt to steal information.\n";
+                recommendation += "• Do not share sensitive data.\n";
                 break;
             }
         }
@@ -159,15 +153,30 @@ function analyze(text, mode) {
         if (text.includes("accept all") || text.includes("agree to all")) {
             score += 30;
             patterns += "• Hidden Consent\n";
-            explanation += "• Forced data tracking agreement.\n";
-            recommendation += "• Try to find 'Reject All' options.\n";
+            explanation += "• Forced agreement detected.\n";
+            recommendation += "• Look for reject options.\n";
         }
 
-        if (text.includes("hurry") || text.includes("limited time")) {
+        if (text.includes("hurry") || text.includes("limited time") || text.includes("only today")) {
             score += 20;
             patterns += "• Urgency Pressure\n";
-            explanation += "• Psychological pressure to force a fast decision.\n";
-            recommendation += "• Take your time to verify the source.\n";
+            explanation += "• Pressure to act quickly.\n";
+            recommendation += "• Take your time before deciding.\n";
+        }
+
+        // 🔥 Misdirection (BIG / SMALL buttons)
+        if (
+            text.includes("big accept") ||
+            text.includes("small reject") ||
+            text.includes("large accept") ||
+            text.includes("tiny reject") ||
+            text.includes("accept button") ||
+            text.includes("reject button")
+        ) {
+            score += 25;
+            patterns += "• Misdirection\n";
+            explanation += "• Accept option is more visible than reject.\n";
+            recommendation += "• Make both options equal.\n";
         }
 
         if (score === 0) {
@@ -176,14 +185,9 @@ function analyze(text, mode) {
     }
 
     let level;
-
-    if (score >= 60) {
-        level = "CRITICAL";
-    } else if (score >= 30) {
-        level = "SUSPICIOUS";
-    } else {
-        level = "LOW RISK";
-    }
+    if (score >= 60) level = "CRITICAL";
+    else if (score >= 30) level = "SUSPICIOUS";
+    else level = "LOW RISK";
 
     return "--- [" + mode.toUpperCase() + " ANALYSIS REPORT] ---\n" +
         "Risk Level: " + level + " | Score: " + score + "\n\n" +
